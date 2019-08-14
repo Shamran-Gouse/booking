@@ -39,20 +39,20 @@ export class PlaceDetailPage implements OnInit {
         {
           text: 'Select Date',
           handler: () => {
-            this.openBookingModl('select');
+            this.openBookingModel('select');
           }
         },
         {
           text: 'Random Date',
           handler: () => {
-            this.openBookingModl('random');
+            this.openBookingModel('random');
           }
         },
         {
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-            console.log('Play clicked');
+            console.log('Cancel clicked');
           }
         }]
     }).then(actionSheetEl => {
@@ -60,13 +60,14 @@ export class PlaceDetailPage implements OnInit {
     });
   }
 
-  openBookingModl(mode: 'select' | 'random') {
+  openBookingModel(mode: 'select' | 'random') {
     console.log(mode);
 
     this.modalCtrl.create({
       component: CreateBookingComponent,
       componentProps: { // Passing Data
-        selectedPlace: this.place
+        selectedPlace: this.place,
+        selectedMode: mode
       }
     })
     .then(modalEl => {
