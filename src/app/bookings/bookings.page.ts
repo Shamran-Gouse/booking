@@ -12,7 +12,7 @@ import { Booking } from './booking.model';
 })
 export class BookingsPage implements OnInit, OnDestroy {
   loadedBokings: Booking[];
-
+  isLoading = false;
   private bookingSub: Subscription;
 
   constructor(private bookingService: BookingService, private loadingCtrl: LoadingController) { }
@@ -20,6 +20,13 @@ export class BookingsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.bookingSub = this.bookingService.bookings.subscribe(bookings => {
       this.loadedBokings = bookings;
+    });
+  }
+
+  ionViewWillEnter() {
+    this.isLoading = true;
+    this.bookingService.fetchBookings().subscribe(() => {
+      this.isLoading = false;
     });
   }
 
