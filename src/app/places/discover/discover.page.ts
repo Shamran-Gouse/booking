@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { PalcesService } from './../palces.service';
 import { Place } from '../place.model';
+import { AuthService } from '../../auth/auth.service';
 
 
 @Component({
@@ -14,21 +15,40 @@ import { Place } from '../place.model';
 export class DiscoverPage implements OnInit, OnDestroy {
   loadedPlaces: Place[];
   listedLoadedPlaces: Place[];
-
+  relevantPlaces: Place[];
+  private chosenFilter = 'all';
   private placesSub: Subscription;
 
 
-  constructor(private placesService: PalcesService) { }
+  constructor(private placesService: PalcesService, private authService: AuthService) { }
 
   ngOnInit() {
     this.placesSub = this.placesService.places.subscribe(places => {
       this.loadedPlaces = places;
-      this.listedLoadedPlaces = this.loadedPlaces.slice(1);
+      if (this.chosenFilter === 'all') {
+        this.relevantPlaces = this.loadedPlaces;
+        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+      } else {
+        this.relevantPlaces = this.loadedPlaces.filter(
+          place => place.userId !== this.authService.userId
+        );
+        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+      }
     });
   }
 
   onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
-    console.log(event.detail);
+    if (event.detail.value === 'all') {
+      this.relevantPlaces = this.loadedPlaces;
+      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+      this.chosenFilter = 'all';
+    } else {
+      this.relevantPlaces = this.loadedPlaces.filter(
+        place => place.userId !== this.authService.userId
+      );
+      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+      this.chosenFilter = 'bookable';
+    }
   }
 
   ngOnDestroy() {
